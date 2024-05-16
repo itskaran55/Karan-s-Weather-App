@@ -1,0 +1,137 @@
+<!-- const apiKey = '85d30c20b40c49418c8930870fac65dc'; -->
+<!-- const apiUrl = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`; -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Karan's Weather App</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Sedan:ital@0;1&family=Tilt+Neon&display=swap');
+
+        * {
+            margin: 0px;
+            padding: 0px;
+            box-sizing: border-box;
+            text-decoration: none;
+            font-family: "Poppins", sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: url('https://images.pexels.com/photos/1118873/pexels-photo-1118873.jpeg?cs=srgb&dl=pexels-jplenio-1118873.jpg&fm=jpg');
+            background-position: center;
+            background-size: cover;
+        }
+
+        .container>.hero {
+            height: 400px;
+            width: 300px;
+            border: 2px solid black;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            background-color: rgba(0, 0, 0, 0.162);
+            backdrop-filter: blur(10px);
+        }
+
+        .container>.hero>.title {
+            margin: 5px 7px;
+            color: aliceblue;
+        }
+
+        .container>.hero>.input>input,
+        button {
+            padding: 3px 5px;
+        }
+
+        .container>.hero>.data {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 7px 10px;
+            margin-top: 10px;
+        }
+
+        .container>.hero>.data>h3,
+        p {
+            background-color: bisque;
+            border-radius: 5px;
+            /* display: block; */
+            width: 100%;
+            margin: 5px 7px;
+            padding: 5px 7px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="hero">
+            <div class="title">
+                <h3>Karan's Weather App</h3>
+            </div>
+            <div class="input">
+                <input type="text" id="city" placeholder="Enter city name">
+                <button id="btn">Search</button>
+            </div>
+            <div class="data">
+
+            </div>
+        </div>
+    </div>
+</body>
+<script>
+    let btn = document.getElementById('btn');
+    btn.addEventListener('click', async function () {
+        // console.log('click');
+
+        let city = document.getElementById('city').value;
+        const apiKey = '85d30c20b40c49418c8930870fac65dc'
+        const apiUrl = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`)
+        const data = await apiUrl.json()
+
+        try {
+            if (!apiUrl.ok) {
+                throw new Error('Sorry could not find data..!')
+            }
+
+            if (data.cod === 200) {
+                const weatherData = document.querySelector('.data');
+                const sunriseTime = new Date(data.sys.sunrise * 1000).toLocaleTimeString();
+                const sunsetTime = new Date(data.sys.sunset * 1000).toLocaleTimeString();
+
+                weatherData.innerHTML = `
+                    <h3 style = 'text-align : center'> Weather in ${city} </h3>
+                    <p> Temperature : ${data.main.temp} °C</p>
+                    <p> Description : ${data.weather[0].description} </p>
+                    <p> Humidity : ${data.main.humidity} %</p>
+                    <p> Wind Speed : ${data.wind.speed} m/s</p>
+                    <p> Sunrise : ${sunriseTime}</p>
+                    <p> Sunset : ${sunsetTime}</p>
+                `;
+            }
+        }
+        catch (err) {
+            alert(`Sorry could not find ${city}'s Weather..!`)
+            console.error(`Error : ${err}`);
+        }
+    });
+</script>
+
+</html>
+
+<!-- In the context of the OpenWeatherMap API response, cod is a field that represents the codification of the response. It's essentially a status code indicating the outcome of the API request. -->
+
+<!-- Here's what some of the common cod values mean:
+
+200: The request was successful. You can expect valid data in the response.
+404: The requested resource was not found. This might happen if the city name provided in the query does not exist in the database or if the endpoint is incorrect.
+401: Unauthorized. This occurs if the API key provided in the request is invalid or missing.
+429: Too Many Requests. You've exceeded the rate limit for your API key. You need to wait for some time before making further requests.
+500: Internal Server Error. This indicates an issue on the server's side. It's not something you can fix on your end; you'll have to wait for the server to be operational again. -->
